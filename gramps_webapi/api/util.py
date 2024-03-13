@@ -28,7 +28,7 @@ import socket
 from email.message import EmailMessage
 from email.utils import make_msgid
 from http import HTTPStatus
-from typing import BinaryIO, List, Optional, Sequence, Tuple
+from typing import BinaryIO, List, Optional, Sequence, Tuple, Union
 
 from celery import Task
 from flask import Response, abort, current_app, g, jsonify, make_response, request
@@ -473,11 +473,15 @@ def get_buffer_for_file(filename: str, delete=True, not_found=False) -> BinaryIO
 
 
 def send_email(
-    subject: str, body: str, to: Sequence[str], from_email: Optional[str] = None
+    subject: str, body: Union[str, EmailMessage], to: Sequence[str], from_email: Optional[str] = None
 ) -> None:
     """Send an e-mail message."""
-    msg = EmailMessage()
-    msg.set_content(body)
+    if not isinstance(body, EmailMessage):
+        msg = EmailMessage()
+        msg.set_content(body)
+    else:
+        msg = body
+        
     msg["Subject"] = subject
     if not from_email:
         from_email = get_config("DEFAULT_FROM_EMAIL")

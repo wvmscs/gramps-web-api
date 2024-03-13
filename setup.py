@@ -52,6 +52,8 @@ REQUIREMENTS = [
     "celery[redis]",
     "Unidecode",
     "pytesseract",
+    "qrcode",
+    "gunicorn",
 ]
 
 setup(
